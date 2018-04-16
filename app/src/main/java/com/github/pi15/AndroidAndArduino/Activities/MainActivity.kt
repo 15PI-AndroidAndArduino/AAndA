@@ -1,7 +1,8 @@
-package com.github.pi15.AndroidAndArduino
+package com.github.pi15.AndroidAndArduino.Activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.github.pi15.AndroidAndArduino.R
 
 class MainActivity : AppCompatActivity() {
 
