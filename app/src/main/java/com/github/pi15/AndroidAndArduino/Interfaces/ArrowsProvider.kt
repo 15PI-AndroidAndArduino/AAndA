@@ -34,6 +34,11 @@ interface ArrowsProvider {
     fun start()
 
     /**
+     * Pauses the provider
+     */
+    fun pause()
+
+    /**
      * Stops the provider
      */
     fun stop()
