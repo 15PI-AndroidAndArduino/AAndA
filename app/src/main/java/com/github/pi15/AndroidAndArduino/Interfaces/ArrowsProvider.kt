@@ -6,7 +6,7 @@ interface ArrowsProvider {
     /**
      * Are any arrows available now
      */
-    fun anyArrowsAvalible() : Boolean
+    fun anyArrowsAvaliable() : Boolean
 
     /**
      * Will the provider generate more arrows
@@ -27,4 +27,14 @@ interface ArrowsProvider {
      * Deletes the bottommost arrow at the giver horizontal coordinate
      */
     fun deleteBottommostArrowAtX(horizontalIndex : Int)
+
+    /**
+     * Starts the provider
+     */
+    fun start()
+
+    /**
+     * Stops the provider
+     */
+    fun stop()
 }

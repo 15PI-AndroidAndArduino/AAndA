@@ -6,10 +6,20 @@ interface ButtonEventsProvider {
     /**
      * Are more button events avaliable
      */
-    fun isProviderEmpty() : Boolean
+    fun anyEventsAvaliable() : Boolean
 
     /**
      * Returns and deletes the oldest recieved button event. If the provider is empty, returns null.
      */
     fun popButtonEvent() : ButtonEvent?
+
+    /**
+     * Starts the provider
+     */
+    fun start()
+
+    /**
+     * Stops the provider
+     */
+    fun stop()
 }
