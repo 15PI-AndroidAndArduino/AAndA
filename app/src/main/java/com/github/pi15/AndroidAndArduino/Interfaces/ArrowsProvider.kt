@@ -11,7 +11,7 @@ interface ArrowsProvider {
     /**
      * Will the provider generate more arrows
      */
-    fun isProviderStopped() : Boolean
+    fun willGenerateMoreArrows() : Boolean
 
     /**
      * All arrows list
