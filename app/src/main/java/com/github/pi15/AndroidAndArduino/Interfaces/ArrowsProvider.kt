@@ -39,6 +39,11 @@ interface ArrowsProvider {
     fun pause()
 
     /**
+     * Resumes the provider
+     */
+    fun resume()
+
+    /**
      * Stops the provider
      */
     fun stop()
