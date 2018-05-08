@@ -10,10 +10,9 @@ import kotlin.concurrent.thread
 
 /**
  * borderCoordsY - интервал нажатия
- * arrowRadius - радиус стрелки
  * arrowsCount - количество стрелок/кнопок
  */
-class GameEngine(private val borderCoordsY: Pair<Int, Int>, private val arrowRadius: Int, private val arrowsCount: Int) : GameStateProvider {
+class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>, private val arrowsCount: Int) : GameStateProvider {
 
     private var arrowsProvider: ArrowsProvider? = null
     private var buttonEventsProvider: ButtonEventsProvider? = null
@@ -22,7 +21,7 @@ class GameEngine(private val borderCoordsY: Pair<Int, Int>, private val arrowRad
     private var gameScore: Int = 0
 
     override val gameState: GameState
-        get() = GameState(arrowsProvider!!.allArrows, gameScore)
+        get() = GameState(arrowsProvider!!.allArrows, gameScore, !arrowsProvider!!.willGenerateMoreArrows())
 
 
     override fun start() {
@@ -60,7 +59,7 @@ class GameEngine(private val borderCoordsY: Pair<Int, Int>, private val arrowRad
     }
 
     private fun mainHandle() {
-        while (!isStopped && !isPaused) {
+        while (!isStopped && !isPaused && arrowsProvider!!.willGenerateMoreArrows()) {
             gameScore += getScore(getPressedButtons(), getPressableArrows())
         }
     }
@@ -111,12 +110,13 @@ class GameEngine(private val borderCoordsY: Pair<Int, Int>, private val arrowRad
     }
 
     private fun arrowOnBorder(arrow: GameArrow): Boolean {
-        if (borderCoordsY.first <= arrow.yCoordinateInDp - arrowRadius && borderCoordsY.second >= arrow.yCoordinateInDp + arrowRadius)
+        if (yBorderCoordinatesInDp.first <= arrow.yCoordinateInDp - arrow.arrowRadiusInDp
+                && yBorderCoordinatesInDp.second >= arrow.yCoordinateInDp +  arrow.arrowRadiusInDp)
             return true
         return false
     }
 
     private fun arrowOutOfScreen(arrow: GameArrow): Boolean {
-        return (borderCoordsY.second < arrow.yCoordinateInDp + arrowRadius)
+        return (yBorderCoordinatesInDp.second < arrow.yCoordinateInDp +  arrow.arrowRadiusInDp)
     }
 }
