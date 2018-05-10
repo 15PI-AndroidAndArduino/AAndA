@@ -52,8 +52,8 @@ class ButtonProviderClass : ButtonEventsProvider
         }
 
     }
-    override fun anyEventsAvaliable(): Boolean? {
-        return buttonsID?.isEmpty()
+    override fun anyEventsAvaliable(): Boolean {
+        return buttonsID?.isEmpty()!!
     }
 
     override fun popButtonEvent(): ButtonEvent? {
