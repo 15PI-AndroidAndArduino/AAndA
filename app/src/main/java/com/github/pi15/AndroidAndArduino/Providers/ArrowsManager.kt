@@ -43,8 +43,8 @@ class ArrowsManager : ArrowsProvider {
 
         //Загружаем биты
         val beats = BeatDetector.detectBeats(audioInputStream, BeatDetector.AudioType.MP3)
-        var minDistance: Long = 0
-        for (i in 0..(beats.size - 1)) {
+        var minDistance: Long = Long.MAX_VALUE
+        for (i in 0..(beats.size - 2)) {
             if (minDistance > beats[i + 1].timeMs - beats[i].timeMs)
                 minDistance = beats[i + 1].timeMs - beats[i].timeMs
         }

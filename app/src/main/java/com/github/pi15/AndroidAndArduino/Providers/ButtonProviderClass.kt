@@ -14,8 +14,8 @@ class ButtonProviderClass : ButtonEventsProvider
     private var client: Socket? = null
     private var inputButtonID:  InputStream? = null
     private var buttonsID: ConcurrentLinkedQueue<ButtonEvent>? = null
-    private val hostIP = "192.168.1.140"
-    private val port = 80
+    private val hostIP = "192.168.0.100"
+    private val port = 30123
     private var stopFlag = false
     private var startFlag = false
 
@@ -66,7 +66,9 @@ class ButtonProviderClass : ButtonEventsProvider
             startFlag = true
             stopFlag = false
 
-            connectToServer()
+            thread {
+                connectToServer()
+            }.join()
 
             thread {
                 while (!stopFlag) {

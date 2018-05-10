@@ -20,6 +20,8 @@
 
 package v4lk.lwbd.decoders.processing.jlayer;
 
+import com.github.pi15.AndroidAndArduino.Activities.MainActivity;
+
 import java.io.*;
 import java.lang.reflect.Array;
 
@@ -149,7 +151,7 @@ public class JavaLayerUtils
 	{
 		if (out==null)
 			throw new NullPointerException("out");
-		
+
 		if (obj==null)
 			throw new NullPointerException("obj");
 		
@@ -194,6 +196,8 @@ public class JavaLayerUtils
 		{
 			Class cls = JavaLayerUtils.class;
 			is = cls.getResourceAsStream(name);
+			if (name == "sfd.ser")
+			    return MainActivity.ser;
 		}
 		
 		return is;		

@@ -7,9 +7,14 @@ import android.util.DisplayMetrics
 import com.github.pi15.AndroidAndArduino.Interfaces.GameStateProvider
 import com.github.pi15.AndroidAndArduino.Providers.GameEngine
 import com.github.pi15.AndroidAndArduino.R
+import java.io.InputStream
 
 
 class MainActivity : Activity() {
+    companion object {
+        lateinit var ser : InputStream
+    }
+
     lateinit var gsProvider : GameStateProvider
 
     private fun getDpHeight(): Int {
@@ -27,6 +32,7 @@ class MainActivity : Activity() {
 
         val dpHeight = getDpHeight()
 
+        ser = resources.openRawResource(R.raw.sfd)
         val stream = resources.openRawResource(R.raw.km)
 
         gsProvider = GameEngine(stream, 4.0,15.0)
