@@ -11,17 +11,16 @@ import java.util.*
 class ButtonProviderClass : ButtonEventsProvider
 {
     private var client: Socket? = null
-    private var input:  InputStream? = null
+    private var inputButtonID:  InputStream? = null
     private var buttonsID: Queue<ButtonEvent>? = null
+    private val hostIP = "192.168.1.140"
+    private val port = 90
 
-
-    private fun connectToServer()
-    {
+    private fun connectToServer() {
         try {
             if (client == null) {
-                client = Socket("192.168.1.140", 80)
-                input = client!!.getInputStream()
-                println("connected")
+                client = Socket(hostIP, port)
+                inputButtonID = client!!.getInputStream()
             }
         } catch (e: IOException) {
             e.printStackTrace()
@@ -32,7 +31,6 @@ class ButtonProviderClass : ButtonEventsProvider
         if (client != null) {
             if (client!!.isConnected()) {
                 try {
-                    input?.close()
                     client!!.close()
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -40,17 +38,14 @@ class ButtonProviderClass : ButtonEventsProvider
             }
         }
     }
-    fun receiveDataFromServer(bytes: ByteArray) {
+    private fun receiveDataFromServer(bytes: ByteArray) {
         try {
             if (!client?.isConnected()!!) {
                 throw IOException("Socket not connected");
             }
-
-            input?.read(bytes)
-
-            //return message
+            inputButtonID?.read(bytes)
         } catch (e: IOException) {
-            e.printStackTrace()
+            e.message
         }
 
     }
