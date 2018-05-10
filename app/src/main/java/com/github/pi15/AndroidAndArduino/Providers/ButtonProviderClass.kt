@@ -13,7 +13,7 @@ class ButtonProviderClass : ButtonEventsProvider
 {
     private var client: Socket? = null
     private var inputButtonID:  InputStream? = null
-    private var buttonsID: ConcurrentLinkedQueue<ButtonEvent>? = null
+    private var buttonsID = ConcurrentLinkedQueue<ButtonEvent>()
     private val hostIP = "192.168.0.100"
     private val port = 30123
     private var stopFlag = false
@@ -53,11 +53,11 @@ class ButtonProviderClass : ButtonEventsProvider
 
     }
     override fun anyEventsAvaliable(): Boolean {
-        return buttonsID?.isEmpty()!!
+        return !buttonsID.isEmpty()
     }
 
     override fun popButtonEvent(): ButtonEvent? {
-        return buttonsID?.poll()
+        return buttonsID.poll()
     }
 
     override fun start() {
@@ -76,10 +76,10 @@ class ButtonProviderClass : ButtonEventsProvider
                     receiveDataFromServer(receiveSizeBytes)
                     val buttonID: Int = ByteBuffer.wrap(receiveSizeBytes).get().toInt()
                     when (buttonID) {
-                        6 -> buttonsID?.offer(ButtonEvent(0))
-                        7 -> buttonsID?.offer(ButtonEvent(1))
-                        8 -> buttonsID?.offer(ButtonEvent(2))
-                        9 -> buttonsID?.offer(ButtonEvent(3))
+                        6 -> buttonsID.offer(ButtonEvent(0))
+                        7 -> buttonsID.offer(ButtonEvent(1))
+                        8 -> buttonsID.offer(ButtonEvent(2))
+                        9 -> buttonsID.offer(ButtonEvent(3))
                     }
                 }
             }
