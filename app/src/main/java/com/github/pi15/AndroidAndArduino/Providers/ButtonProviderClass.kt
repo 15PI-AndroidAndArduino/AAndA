@@ -15,7 +15,7 @@ class ButtonProviderClass : ButtonEventsProvider
     private var inputButtonID:  InputStream? = null
     private var buttonsID: ConcurrentLinkedQueue<ButtonEvent>? = null
     private val hostIP = "192.168.1.140"
-    private val port = 90
+    private val port = 80
     private var stopFlag = false
     private var startFlag = false
 
@@ -52,8 +52,8 @@ class ButtonProviderClass : ButtonEventsProvider
         }
 
     }
-    override fun anyEventsAvaliable(): Boolean? {
-        return buttonsID?.isEmpty()
+    override fun anyEventsAvaliable(): Boolean {
+        return buttonsID?.isEmpty()!!
     }
 
     override fun popButtonEvent(): ButtonEvent? {
@@ -80,7 +80,7 @@ class ButtonProviderClass : ButtonEventsProvider
                         9 -> buttonsID?.offer(ButtonEvent(3))
                     }
                 }
-            }.start()
+            }
         }
     }
     override fun pause() {

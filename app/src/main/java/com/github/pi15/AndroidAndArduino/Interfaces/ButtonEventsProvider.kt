@@ -6,7 +6,7 @@ interface ButtonEventsProvider {
     /**
      * Are more button events avaliable
      */
-    fun anyEventsAvaliable() : Boolean?
+    fun anyEventsAvaliable() : Boolean
 
     /**
      * Returns and deletes the oldest recieved button event. If the provider is empty, returns null.
