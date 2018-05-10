@@ -6,15 +6,18 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.Socket
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.concurrent.thread
 
 class ButtonProviderClass : ButtonEventsProvider
 {
     private var client: Socket? = null
     private var inputButtonID:  InputStream? = null
-    private var buttonsID: Queue<ButtonEvent>? = null
+    private var buttonsID: ConcurrentLinkedQueue<ButtonEvent>? = null
     private val hostIP = "192.168.1.140"
     private val port = 90
+    private var stopFlag = false
+    private var startFlag = false
 
     private fun connectToServer() {
         try {
@@ -58,13 +61,28 @@ class ButtonProviderClass : ButtonEventsProvider
     }
 
     override fun start() {
-        connectToServer()
 
-        val receiveSizeBytes = ByteArray(1)
-        receiveDataFromServer(receiveSizeBytes)
-        buttonsID?.offer(ButtonEvent(ByteBuffer.wrap(receiveSizeBytes).get().toInt()))
+        if(!startFlag) {
+            startFlag = true
+            stopFlag = false
+
+            connectToServer()
+
+            thread {
+                while (!stopFlag) {
+                    val receiveSizeBytes = ByteArray(1)
+                    receiveDataFromServer(receiveSizeBytes)
+                    val buttonID: Int = ByteBuffer.wrap(receiveSizeBytes).get().toInt()
+                    when (buttonID) {
+                        6 -> buttonsID?.offer(ButtonEvent(0))
+                        7 -> buttonsID?.offer(ButtonEvent(1))
+                        8 -> buttonsID?.offer(ButtonEvent(2))
+                        9 -> buttonsID?.offer(ButtonEvent(3))
+                    }
+                }
+            }.start()
+        }
     }
-
     override fun pause() {
         stop()
     }
@@ -74,6 +92,7 @@ class ButtonProviderClass : ButtonEventsProvider
     }
 
     override fun stop() {
+        stopFlag = true
         disConnectWithServer()
     }
 }
