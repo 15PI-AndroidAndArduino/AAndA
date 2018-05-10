@@ -10,9 +10,16 @@ import com.github.pi15.AndroidAndArduino.Interfaces.GameStateProvider
 
 
 class MainActivity : Activity() {
+    lateinit var gsProvider : GameStateProvider
+
     private fun getDpHeight(): Int {
         val displayMetrics = resources.displayMetrics
         return Math.round(displayMetrics.heightPixels / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT))
+    }
+
+    private fun getPxHeight(): Int {
+        val displayMetrics = resources.displayMetrics
+        return displayMetrics.heightPixels
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,12 +28,22 @@ class MainActivity : Activity() {
         val dpHeight = getDpHeight()
 
         val gsProvider : GameStateProvider = TODO("GS")
-
+        gsProvider.start()
         setContentView(GameView(this, gsProvider, 900))
     }
 
     override fun onResume() {
         super.onResume()
+        gsProvider.resume()
+    }
 
+    override fun onPause() {
+        super.onPause()
+        gsProvider.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        gsProvider.stop()
     }
 }
