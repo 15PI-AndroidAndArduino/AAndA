@@ -16,10 +16,8 @@ class ArrowsManager : ArrowsProvider {
     private val timerLock = ReentrantLock()
     private val speed:Double
     private val updateRate: Long
-    private val beats: Array<Beat>
     private val arrowRadius: Double
 
-    private val random: Random
     private var arrowType: Int
 
     private var isStoped: Boolean
@@ -27,12 +25,24 @@ class ArrowsManager : ArrowsProvider {
     private var alreadyStart: Boolean
     private var pauseTime: Long
     private var elapsedTime: Long
-    private var indexInBeats: Int
 
 
-    public constructor(pathToFile: String, arrowRadius: Double, updateRateMs: Long) {
-        val audioFile = File(pathToFile)
-        beats = BeatDetector.detectBeats(audioFile, BeatDetector.AudioType.MP3)
+    public constructor(audioInputStream: InputStream, arrowRadius: Double, minimalDistanceBetweenArrows: Double, updateRateMs: Long) {
+        //Тут происходит генерация стрелок
+        isStoped = false
+        isPaused = false
+        alreadyStart = false
+        pauseTime = 0
+        elapsedTime = 0
+        arrowType = -1
+
+        this.arrowRadius = arrowRadius
+        allArrows = mutableListOf()
+        var moveType: Int
+        val random = Random()
+
+        //Загружаем биты
+        val beats = BeatDetector.detectBeats(audioInputStream, BeatDetector.AudioType.MP3)
         var minDistance: Long = 0
         for (i in 0..(beats.size - 1)) {
             if (minDistance > beats[i + 1].timeMs - beats[i].timeMs)
@@ -40,22 +50,23 @@ class ArrowsManager : ArrowsProvider {
         }
 
         //arrowRadius * 2 * 2 Чтобы между стрелками точно помещалась ещё одна. Избежания наложения
-        speed = arrowRadius * 2 * 2 / minDistance
+        speed = minimalDistanceBetweenArrows / minDistance
         updateRate = updateRateMs
 
-        //Тут происходит генерация стрелок
-        random = Random()
+        //Генерим стрелки ЛОЛ
+        for(x in beats) {
+            //Generate arrow type
+            if (arrowType == -1)
+                arrowType = random.nextInt(4)// [0; 3]
+            else {
+                moveType = random.nextInt(3) - 1//[-1; 1]
+                arrowType += moveType
+                if (arrowType < 0) arrowType = 0
+                if (arrowType > 3) arrowType = 3
+            }
 
-        isStoped = false
-        isPaused = false
-        alreadyStart = false
-        pauseTime = 0
-        indexInBeats = 0
-        elapsedTime = 0
-        arrowType = -1
-
-        this.arrowRadius = arrowRadius
-        allArrows = mutableListOf()
+            allArrows.add(GameArrow(arrowType, -(x.timeMs * speed), arrowRadius))
+        }
     }
 
     override fun anyArrowsAvaliable(): Boolean {
@@ -63,7 +74,17 @@ class ArrowsManager : ArrowsProvider {
     }
 
     override fun willGenerateMoreArrows(): Boolean {
-        return indexInBeats < beats.size
+        var result:Boolean = false
+
+        lock.lock()
+        for(x in allArrows)
+            if(x.yCoordinateInDp < 0){
+                result = true
+                break
+            }
+        lock.unlock()
+
+        return result
     }
 
     override fun getBottommostArrowAtX(horizontalIndex: Int): GameArrow? {
@@ -110,7 +131,6 @@ class ArrowsManager : ArrowsProvider {
                         for(x in allArrows){
                             x.yCoordinateInDp += speed*updateRate
                         }
-                        tryGenerateNewArrow()
                         lock.unlock()
 
                     } else {
@@ -139,27 +159,5 @@ class ArrowsManager : ArrowsProvider {
     override fun stop() {
         isPaused = false
         isStoped = true
-    }
-
-    private fun tryGenerateNewArrow() {
-        if(indexInBeats == beats.size)
-            return
-        if (beats[indexInBeats].timeMs > elapsedTime)
-            return
-
-        var moveType: Int
-
-        //Generate arrow type
-        if (arrowType == -1)
-            arrowType = random.nextInt(4)// [0; 3]
-        else {
-            moveType = random.nextInt(3) - 1//[-1; 1]
-            arrowType += moveType
-            if (arrowType < 0) arrowType = 0
-            if (arrowType > 3) arrowType = 3
-        }
-
-        allArrows.add(GameArrow(arrowType, (beats[indexInBeats].timeMs - elapsedTime) * speed, arrowRadius))
-        indexInBeats++
     }
 }
