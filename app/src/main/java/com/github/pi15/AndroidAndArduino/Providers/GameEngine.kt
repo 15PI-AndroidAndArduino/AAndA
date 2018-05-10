@@ -6,7 +6,10 @@ import com.github.pi15.AndroidAndArduino.Containers.GameState
 import com.github.pi15.AndroidAndArduino.Interfaces.ArrowsProvider
 import com.github.pi15.AndroidAndArduino.Interfaces.ButtonEventsProvider
 import com.github.pi15.AndroidAndArduino.Interfaces.GameStateProvider
+import java.util.*
+import java.util.logging.Handler
 import kotlin.concurrent.thread
+import kotlin.concurrent.timer
 
 /**
  * borderCoordsY - интервал нажатия
@@ -15,20 +18,16 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : Gam
 
     private var arrowsProvider: ArrowsProvider? = null
     private var buttonEventsProvider: ButtonEventsProvider? = null
-    private var isStopped: Boolean = false
-    private var isPaused: Boolean = false
     private var gameScore: Int = 0
     private val arrowsCount: Int = 4
     private var correctSequence: Int = 0
-
+    private lateinit var timer: Timer
+    private val updatePeriod: Long = 500
 
     override val gameState: GameState
         get() = GameState(arrowsProvider!!.allArrows, gameScore, !arrowsProvider!!.willGenerateMoreArrows())
 
-
     override fun start() {
-        isPaused = false
-        isStopped = false
         if (arrowsProvider == null)
             arrowsProvider = TODO("not implemented")
         arrowsProvider?.start()
@@ -36,24 +35,26 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : Gam
             buttonEventsProvider = TODO("not implemented")
         buttonEventsProvider?.start()
 
-        thread { mainHandle() }.start()
+        timer = timer(period = updatePeriod) {
+            mainHandle()
+        }
     }
 
     override fun pause() {
-        isPaused = true
+        timer.cancel()
         arrowsProvider?.pause()
         buttonEventsProvider?.pause()
     }
 
     override fun resume() {
-        isPaused = false
         arrowsProvider?.resume()
         buttonEventsProvider?.resume()
-        thread { mainHandle() }.start()
+        timer = timer(period = updatePeriod) {
+            mainHandle()
+        }
     }
 
     override fun stop() {
-        isStopped = true
         arrowsProvider?.stop()
         buttonEventsProvider?.stop()
         arrowsProvider = null
@@ -61,9 +62,10 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : Gam
     }
 
     private fun mainHandle() {
-        while (!isStopped && !isPaused && arrowsProvider!!.willGenerateMoreArrows()) {
+        if (!arrowsProvider!!.willGenerateMoreArrows()) {
+            timer.cancel()
+        } else
             gameScore += getScore(getPressedButtons(), getPressableArrows())
-        }
     }
 
     private fun getScore(buttons: ArrayList<ButtonEvent>, arrows: ArrayList<GameArrow>): Int {
