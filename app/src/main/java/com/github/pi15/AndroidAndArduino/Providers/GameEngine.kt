@@ -13,8 +13,9 @@ import kotlin.concurrent.timer
 
 /**
  * borderCoordsY - интервал нажатия
+ * arrowRadius - радиус стрелок
  */
-class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : GameStateProvider {
+class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>, private val arrowRadius : Double) : GameStateProvider {
 
     private var arrowsProvider: ArrowsProvider? = null
     private var buttonEventsProvider: ButtonEventsProvider? = null
@@ -23,6 +24,7 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : Gam
     private var correctSequence: Int = 0
     private lateinit var timer: Timer
     private val updatePeriod: Long = 500
+    private var isPaused = false
 
     override val gameState: GameState
         get() = GameState(arrowsProvider!!.allArrows, gameScore,
@@ -41,12 +43,16 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : Gam
     }
 
     override fun pause() {
+        isPaused = true
         timer.cancel()
         arrowsProvider?.pause()
         buttonEventsProvider?.pause()
     }
 
     override fun resume() {
+        if (!isPaused) return
+
+        isPaused = false
         arrowsProvider?.resume()
         buttonEventsProvider?.resume()
         timer = timer(period = updatePeriod) {
