@@ -6,7 +6,7 @@ import android.view.SurfaceView
 import com.github.pi15.AndroidAndArduino.Interfaces.GameStateProvider
 
 
-class GameView(context: Context, val gsProvider : GameStateProvider, val borderInPxYCoord : Int) : SurfaceView(context), SurfaceHolder.Callback {
+class GameView(context: Context, val gsProvider : GameStateProvider, val zoneHeight : Int) : SurfaceView(context), SurfaceHolder.Callback {
     private lateinit var drawThread: GameViewDrawer
 
     init {
@@ -18,7 +18,7 @@ class GameView(context: Context, val gsProvider : GameStateProvider, val borderI
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
-        drawThread = GameViewDrawer(holder, gsProvider, borderInPxYCoord, context.getResources().getDisplayMetrics().density)
+        drawThread = GameViewDrawer(holder, gsProvider, zoneHeight, context.getResources().getDisplayMetrics().density)
         drawThread.setRunning(true)
         drawThread.start()
     }

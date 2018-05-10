@@ -30,7 +30,7 @@ class MainActivity : Activity() {
 
         gsProvider = DummyGsp()//TODO("GS")
         gsProvider.start()
-        setContentView(GameView(this, gsProvider, 900))
+        setContentView(GameView(this, gsProvider, 200))
     }
 
     override fun onResume() {

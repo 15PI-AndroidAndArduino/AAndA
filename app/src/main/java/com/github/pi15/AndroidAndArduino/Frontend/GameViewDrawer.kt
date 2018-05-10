@@ -6,7 +6,7 @@ import com.github.pi15.AndroidAndArduino.Interfaces.GameStateProvider
 
 internal class GameViewDrawer(private val surfaceHolder: SurfaceHolder,
                               val gsProvider : GameStateProvider,
-                              val borderInPxYCoord : Int,
+                              val zoneHeight : Int,
                               val dpToPx : Float) : Thread() {
     private var runFlag = false
     private var prevTime: Long = 0
@@ -43,7 +43,7 @@ internal class GameViewDrawer(private val surfaceHolder: SurfaceHolder,
     private fun draw(canvas: Canvas) {
         canvas.drawColor(Color.GRAY)
 
-        canvas.drawRect(0 * 1f, borderInPxYCoord * 1f,
+        canvas.drawRect(0 * 1f, canvas.height - zoneHeight * 1f,
                 canvas.width * 1f, canvas.height * 1f, rectPaint)
 
         val state = gsProvider.gameState
