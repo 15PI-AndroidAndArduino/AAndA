@@ -15,7 +15,7 @@ class ButtonProviderClass : ButtonEventsProvider
     private var inputButtonID:  InputStream? = null
     private var buttonsID: ConcurrentLinkedQueue<ButtonEvent>? = null
     private val hostIP = "192.168.1.140"
-    private val port = 90
+    private val port = 80
     private var stopFlag = false
     private var startFlag = false
 
