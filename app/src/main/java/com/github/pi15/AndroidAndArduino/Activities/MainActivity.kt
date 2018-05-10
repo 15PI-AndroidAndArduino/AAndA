@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.github.pi15.AndroidAndArduino.Frontend.GameView
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import com.github.pi15.AndroidAndArduino.Frontend.DummyGsp
 import com.github.pi15.AndroidAndArduino.Interfaces.GameStateProvider
 
 
@@ -27,7 +28,7 @@ class MainActivity : Activity() {
 
         val dpHeight = getDpHeight()
 
-        val gsProvider : GameStateProvider = TODO("GS")
+        gsProvider = DummyGsp()//TODO("GS")
         gsProvider.start()
         setContentView(GameView(this, gsProvider, 900))
     }

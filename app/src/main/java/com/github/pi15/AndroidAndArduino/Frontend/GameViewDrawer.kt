@@ -13,18 +13,27 @@ internal class GameViewDrawer(private val surfaceHolder: SurfaceHolder,
 
     val textPaint  = Paint()
     val rectPaint  = Paint()
-    val arrowPaint  = Paint()
+    val arrowPaint = Array(4, { _ ->  Paint()})
+    val arrowPaint2  = Paint()
+    val arrowPaint3  = Paint()
+    val arrowPaint4  = Paint()
 
     init {
         textPaint.textSize = 50f
         textPaint.color = Color.WHITE
         textPaint.style = Paint.Style.FILL
 
-        rectPaint.color = Color.BLUE
+        rectPaint.color = Color.DKGRAY
         rectPaint.style = Paint.Style.FILL
 
-        arrowPaint.color = Color.GREEN
-        arrowPaint.style = Paint.Style.FILL
+        arrowPaint[0].color = Color.BLUE
+        arrowPaint[0].style = Paint.Style.FILL
+        arrowPaint[1].color = Color.GREEN
+        arrowPaint[1].style = Paint.Style.FILL
+        arrowPaint[2].color = Color.YELLOW
+        arrowPaint[2].style = Paint.Style.FILL
+        arrowPaint[3].color = Color.RED
+        arrowPaint[3].style = Paint.Style.FILL
     }
 
     fun setRunning(run: Boolean) {
@@ -40,12 +49,12 @@ internal class GameViewDrawer(private val surfaceHolder: SurfaceHolder,
         val state = gsProvider.gameState
         canvas.drawText(state.score.toString(), 25f, 60f, textPaint)
 
-        val horisontalStep = canvas.width / 4 - 100
+        val horisontalStep = canvas.width / 5f
 
         for (arrow in state.arrows) {
-            canvas.drawCircle(arrow.arrowHorisontalId * horisontalStep + 50f,
+            canvas.drawCircle((1 + arrow.arrowHorisontalId) * horisontalStep,
                     (arrow.yCoordinateInDp * dpToPx).toFloat(),
-                    (arrow.arrowRadiusInDp * dpToPx).toFloat(), arrowPaint)
+                    (arrow.arrowRadiusInDp * dpToPx).toFloat(), arrowPaint[arrow.arrowHorisontalId])
         }
     }
 
