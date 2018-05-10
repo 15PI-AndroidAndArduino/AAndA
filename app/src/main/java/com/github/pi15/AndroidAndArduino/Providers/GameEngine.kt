@@ -10,12 +10,13 @@ import java.util.*
 import java.util.logging.Handler
 import kotlin.concurrent.thread
 import kotlin.concurrent.timer
+import kotlin.math.abs
 
 /**
- * borderCoordsY - интервал нажатия
+ * deflection - разница между шириной границы и диаметром стрелки
  * arrowRadius - радиус стрелок
  */
-class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>, private val arrowRadius : Double) : GameStateProvider {
+class GameEngine(private val deflection : Double, private val arrowRadius: Double) : GameStateProvider {
 
     private var arrowsProvider: ArrowsProvider? = null
     private var buttonEventsProvider: ButtonEventsProvider? = null
@@ -23,7 +24,7 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>, priva
     private val arrowsCount: Int = 4
     private var correctSequence: Int = 0
     private lateinit var timer: Timer
-    private val updatePeriod: Long = 500
+    private val updatePeriod: Long = 50
     private var isPaused = false
 
     override val gameState: GameState
@@ -130,14 +131,11 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>, priva
     }
 
     private fun arrowOnBorder(arrow: GameArrow): Boolean {
-        if (yBorderCoordinatesInDp.first <= arrow.yCoordinateInDp - arrow.arrowRadiusInDp
-                && yBorderCoordinatesInDp.second >= arrow.yCoordinateInDp + arrow.arrowRadiusInDp)
-            return true
-        return false
+        return (abs(arrow.yCoordinateInDp) <= deflection)
     }
 
     private fun arrowOutOfScreen(arrow: GameArrow): Boolean {
         correctSequence = 0
-        return (yBorderCoordinatesInDp.second < arrow.yCoordinateInDp + arrow.arrowRadiusInDp)
+        return arrow.yCoordinateInDp > deflection
     }
 }
