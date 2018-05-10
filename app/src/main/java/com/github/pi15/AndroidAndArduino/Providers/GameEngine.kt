@@ -25,7 +25,8 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : Gam
     private val updatePeriod: Long = 500
 
     override val gameState: GameState
-        get() = GameState(arrowsProvider!!.allArrows, gameScore, !arrowsProvider!!.willGenerateMoreArrows())
+        get() = GameState(arrowsProvider!!.allArrows, gameScore,
+                !arrowsProvider!!.willGenerateMoreArrows() && !arrowsProvider!!.anyArrowsAvaliable())
 
     override fun start() {
         if (arrowsProvider == null)
@@ -62,8 +63,10 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : Gam
     }
 
     private fun mainHandle() {
-        if (!arrowsProvider!!.willGenerateMoreArrows()) {
+        if (!arrowsProvider!!.willGenerateMoreArrows() && !arrowsProvider!!.anyArrowsAvaliable()) {
             timer.cancel()
+            buttonEventsProvider?.stop()
+            arrowsProvider?.stop()
         } else
             gameScore += getScore(getPressedButtons(), getPressableArrows())
     }
