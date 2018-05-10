@@ -10,15 +10,17 @@ import kotlin.concurrent.thread
 
 /**
  * borderCoordsY - интервал нажатия
- * arrowsCount - количество стрелок/кнопок
  */
-class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>, private val arrowsCount: Int) : GameStateProvider {
+class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : GameStateProvider {
 
     private var arrowsProvider: ArrowsProvider? = null
     private var buttonEventsProvider: ButtonEventsProvider? = null
     private var isStopped: Boolean = false
     private var isPaused: Boolean = false
     private var gameScore: Int = 0
+    private val arrowsCount: Int = 4
+    private var correctSequence: Int = 0
+
 
     override val gameState: GameState
         get() = GameState(arrowsProvider!!.allArrows, gameScore, !arrowsProvider!!.willGenerateMoreArrows())
@@ -66,15 +68,22 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>, priva
 
     private fun getScore(buttons: ArrayList<ButtonEvent>, arrows: ArrayList<GameArrow>): Int {
         var result = 0
+        var wasMistake = false
         for (button in buttons) {
             val theArrow = arrows.firstOrNull { a -> a.arrowHorisontalId == button.buttonId }
             if (theArrow == null) {
                 result--
+                wasMistake = true
             } else {
                 result++
                 arrowsProvider!!.deleteBottommostArrowAtX(theArrow.arrowHorisontalId)
                 arrows.remove(theArrow)
             }
+        }
+        if (!wasMistake) {
+            correctSequence += result
+            if (correctSequence % 10 == 0)
+                result += 5
         }
         return result
     }
@@ -83,7 +92,7 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>, priva
     private fun getPressedButtons(): ArrayList<ButtonEvent> {
         val pressed: ArrayList<ButtonEvent> = ArrayList()
 
-        for (i in 0..arrowsCount) {
+        for (i in 0..(arrowsCount - 1)) {
             if (!buttonEventsProvider!!.anyEventsAvaliable())
                 break
             pressed.add(buttonEventsProvider!!.popButtonEvent()!!)
@@ -94,7 +103,7 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>, priva
     private fun getPressableArrows(): ArrayList<GameArrow> {
         val arrows: ArrayList<GameArrow> = ArrayList()
 
-        for (i in 0..arrowsCount) {
+        for (i in 0..(arrowsCount - 1)) {
             val arrow = arrowsProvider!!.getBottommostArrowAtX(i)
             if (arrow != null) {
                 if (arrowOnBorder(arrow))
@@ -111,12 +120,13 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>, priva
 
     private fun arrowOnBorder(arrow: GameArrow): Boolean {
         if (yBorderCoordinatesInDp.first <= arrow.yCoordinateInDp - arrow.arrowRadiusInDp
-                && yBorderCoordinatesInDp.second >= arrow.yCoordinateInDp +  arrow.arrowRadiusInDp)
+                && yBorderCoordinatesInDp.second >= arrow.yCoordinateInDp + arrow.arrowRadiusInDp)
             return true
         return false
     }
 
     private fun arrowOutOfScreen(arrow: GameArrow): Boolean {
-        return (yBorderCoordinatesInDp.second < arrow.yCoordinateInDp +  arrow.arrowRadiusInDp)
+        correctSequence = 0
+        return (yBorderCoordinatesInDp.second < arrow.yCoordinateInDp + arrow.arrowRadiusInDp)
     }
 }
