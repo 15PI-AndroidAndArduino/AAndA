@@ -1,22 +1,25 @@
 package com.github.pi15.AndroidAndArduino.Providers
 
+import android.net.rtp.AudioStream
 import com.github.pi15.AndroidAndArduino.Containers.ButtonEvent
 import com.github.pi15.AndroidAndArduino.Containers.GameArrow
 import com.github.pi15.AndroidAndArduino.Containers.GameState
 import com.github.pi15.AndroidAndArduino.Interfaces.ArrowsProvider
 import com.github.pi15.AndroidAndArduino.Interfaces.ButtonEventsProvider
 import com.github.pi15.AndroidAndArduino.Interfaces.GameStateProvider
+import java.io.InputStream
 import java.util.*
 import java.util.logging.Handler
 import kotlin.concurrent.thread
 import kotlin.concurrent.timer
 import kotlin.math.abs
+import kotlin.math.max
 
 /**
  * deflection - разница между шириной границы и диаметром стрелки
  * arrowRadius - радиус стрелок
  */
-class GameEngine(private val deflection : Double, private val arrowRadius: Double) : GameStateProvider {
+class GameEngine(private val audioStream: InputStream, private val deflection : Double, private val arrowRadius: Double) : GameStateProvider {
 
     private var arrowsProvider: ArrowsProvider? = null
     private var buttonEventsProvider: ButtonEventsProvider? = null
@@ -32,8 +35,9 @@ class GameEngine(private val deflection : Double, private val arrowRadius: Doubl
                 !arrowsProvider!!.willGenerateMoreArrows() && !arrowsProvider!!.anyArrowsAvaliable())
 
     override fun start() {
-        arrowsProvider = TODO("not implemented")
-        buttonEventsProvider = TODO("not implemented")
+        arrowsProvider = ArrowsManager(audioStream, arrowRadius,
+                arrowRadius*2 + max(arrowRadius, deflection), updatePeriod)
+        buttonEventsProvider = ButtonProviderClass()
 
         arrowsProvider?.start()
         buttonEventsProvider?.start()
