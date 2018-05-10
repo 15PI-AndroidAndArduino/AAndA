@@ -29,11 +29,10 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : Gam
                 !arrowsProvider!!.willGenerateMoreArrows() && !arrowsProvider!!.anyArrowsAvaliable())
 
     override fun start() {
-        if (arrowsProvider == null)
-            arrowsProvider = TODO("not implemented")
+        arrowsProvider = TODO("not implemented")
+        buttonEventsProvider = TODO("not implemented")
+
         arrowsProvider?.start()
-        if (buttonEventsProvider == null)
-            buttonEventsProvider = TODO("not implemented")
         buttonEventsProvider?.start()
 
         timer = timer(period = updatePeriod) {
@@ -56,6 +55,7 @@ class GameEngine(private val yBorderCoordinatesInDp: Pair<Double, Double>) : Gam
     }
 
     override fun stop() {
+        timer.cancel()
         arrowsProvider?.stop()
         buttonEventsProvider?.stop()
         arrowsProvider = null
