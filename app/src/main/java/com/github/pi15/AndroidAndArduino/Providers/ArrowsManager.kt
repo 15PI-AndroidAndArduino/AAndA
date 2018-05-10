@@ -139,7 +139,7 @@ class ArrowsManager : ArrowsProvider {
                         timerLock.unlock()
                     }
                 }
-            }.start()
+            }
         }
     }
 
