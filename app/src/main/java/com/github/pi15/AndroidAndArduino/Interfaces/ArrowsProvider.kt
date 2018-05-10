@@ -16,7 +16,7 @@ interface ArrowsProvider {
     /**
      * All arrows list
      */
-    val allArrows : List<GameArrow>
+    val allArrows : MutableList<GameArrow>
 
     /**
      * Returns the bottommost arrow at the given horizontal coordinate if any. Otherwise, returns null.
