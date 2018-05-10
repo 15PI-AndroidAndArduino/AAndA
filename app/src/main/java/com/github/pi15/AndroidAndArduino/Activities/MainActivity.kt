@@ -1,13 +1,13 @@
 package com.github.pi15.AndroidAndArduino.Activities
 
-import android.support.v7.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
-import com.github.pi15.AndroidAndArduino.R
+import com.github.pi15.AndroidAndArduino.Frontend.GameView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(GameView(this))
     }
 }
