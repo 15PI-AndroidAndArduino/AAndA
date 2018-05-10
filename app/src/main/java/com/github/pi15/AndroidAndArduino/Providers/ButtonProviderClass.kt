@@ -80,7 +80,7 @@ class ButtonProviderClass : ButtonEventsProvider
                         9 -> buttonsID?.offer(ButtonEvent(3))
                     }
                 }
-            }.start()
+            }
         }
     }
     override fun pause() {
