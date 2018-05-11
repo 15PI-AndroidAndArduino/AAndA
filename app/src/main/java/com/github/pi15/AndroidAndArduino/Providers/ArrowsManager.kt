@@ -91,8 +91,8 @@ class ArrowsManager : ArrowsProvider {
         var result: GameArrow?
 
         lock.lock()
-        result = if(allArrows.size != 0)
-            allArrows[0]
+        result = if(allArrows.size > horizontalIndex)
+            allArrows[horizontalIndex]
         else
             null
         lock.unlock()
@@ -102,7 +102,7 @@ class ArrowsManager : ArrowsProvider {
 
     override fun deleteBottommostArrowAtX(horizontalIndex: Int) {
         lock.lock()
-        allArrows.removeAt(0)
+        allArrows.removeAt(horizontalIndex)
         lock.unlock()
     }
 
