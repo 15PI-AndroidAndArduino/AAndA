@@ -1,6 +1,8 @@
 package com.github.pi15.AndroidAndArduino.Activities
 
 import android.app.Activity
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import com.github.pi15.AndroidAndArduino.Frontend.GameView
 import android.util.DisplayMetrics
@@ -16,6 +18,7 @@ class MainActivity : Activity() {
     }
 
     lateinit var gsProvider : GameStateProvider
+    lateinit var player : MediaPlayer
 
     private fun getDpHeight(): Int {
         val displayMetrics = resources.displayMetrics
@@ -32,6 +35,10 @@ class MainActivity : Activity() {
 
         val dpHeight = getDpHeight()
 
+        player = MediaPlayer.create(this, R.raw.km)
+        player.setVolume(100f,100f)
+        player.start()
+
         ser = resources.openRawResource(R.raw.sfd)
         val stream = resources.openRawResource(R.raw.km)
 
@@ -43,15 +50,20 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         gsProvider.resume()
+        if (!player.isPlaying)
+            player.start()
     }
 
     override fun onPause() {
         super.onPause()
         gsProvider.pause()
+        player.pause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         gsProvider.stop()
+        player.stop()
+        player.release()
     }
 }
