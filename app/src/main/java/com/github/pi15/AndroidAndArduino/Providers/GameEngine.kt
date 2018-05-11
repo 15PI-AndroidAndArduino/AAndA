@@ -9,6 +9,8 @@ import com.github.pi15.AndroidAndArduino.Interfaces.ButtonEventsProvider
 import com.github.pi15.AndroidAndArduino.Interfaces.GameStateProvider
 import java.io.InputStream
 import java.util.*
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 import java.util.logging.Handler
 import kotlin.concurrent.thread
 import kotlin.concurrent.timer
@@ -29,6 +31,7 @@ class GameEngine(private val audioStream: InputStream, private val deflection : 
     private lateinit var timer: Timer
     private val updatePeriod: Long = 50
     private var isPaused = false
+    private val lock = ReentrantLock()
 
     override val gameState: GameState
         get() = GameState(arrowsProvider!!.allArrows, gameScore,
@@ -71,6 +74,7 @@ class GameEngine(private val audioStream: InputStream, private val deflection : 
         buttonEventsProvider?.stop()
         arrowsProvider = null
         buttonEventsProvider = null
+
     }
 
     private fun mainHandle() {
@@ -78,8 +82,12 @@ class GameEngine(private val audioStream: InputStream, private val deflection : 
             timer.cancel()
             buttonEventsProvider?.stop()
             arrowsProvider?.stop()
-        } else
-            gameScore += getScore(getPressedButtons(), getPressableArrows())
+        } else {
+            val res = getScore(getPressedButtons(), getPressableArrows())
+            lock.lock()
+            gameScore+=res
+            lock.unlock()
+        }
     }
 
     private fun getScore(buttons: ArrayList<ButtonEvent>, arrows: ArrayList<GameArrow>): Int {
@@ -126,7 +134,9 @@ class GameEngine(private val audioStream: InputStream, private val deflection : 
                     arrows.add(arrow)
                 else if (arrowOutOfScreen(arrow)) {
                     arrowsProvider?.deleteBottommostArrowAtX(i)
+                    lock.lock()
                     gameScore--
+                    lock.unlock()
                 }
             }
 
