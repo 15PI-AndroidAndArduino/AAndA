@@ -98,7 +98,7 @@ class GameEngine(private val audioStream: InputStream, private val deflection : 
         }
         if (!wasMistake) {
             correctSequence += result
-            if (correctSequence % 10 == 0)
+            if (correctSequence != 0 && correctSequence % 10 == 0)
                 result += 5
         }
         return result
