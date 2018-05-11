@@ -52,8 +52,11 @@ internal class GameViewDrawer(private val surfaceHolder: SurfaceHolder,
         val horisontalStep = canvas.width / 5f
 
         for (arrow in state.arrows) {
+            val y = (arrow.yCoordinateInDp * dpToPx).toFloat() + canvas.height - zoneHeight / 2
+            if (y < 0)
+                continue
             canvas.drawCircle((1 + arrow.arrowHorisontalId) * horisontalStep,
-                    (arrow.yCoordinateInDp * dpToPx).toFloat(),
+                    y,
                     (arrow.arrowRadiusInDp * dpToPx).toFloat(), arrowPaint[arrow.arrowHorisontalId])
         }
     }
