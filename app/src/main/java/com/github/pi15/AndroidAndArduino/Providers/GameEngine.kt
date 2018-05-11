@@ -39,7 +39,8 @@ class GameEngine(private val audioStream: InputStream, private val deflection : 
 
     override fun start() {
         arrowsProvider = ArrowsManager(audioStream, arrowRadius,
-                arrowRadius*2 + max(arrowRadius, deflection), 2.5)
+                arrowRadius*2 + max(arrowRadius, deflection), 4.0,
+                7000)
         buttonEventsProvider = ButtonProviderClass()
 
         arrowsProvider?.start()

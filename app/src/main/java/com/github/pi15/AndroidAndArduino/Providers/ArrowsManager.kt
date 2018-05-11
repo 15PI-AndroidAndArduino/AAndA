@@ -13,7 +13,8 @@ import kotlin.concurrent.thread
 import kotlin.math.min
 
 class ArrowsManager public constructor(audioInputStream: InputStream, val arrowRadius: Double,
-                                       minimalDistanceBetweenArrows: Double, val deltaDp : Double) : ArrowsProvider {
+                                       minimalDistanceBetweenArrows: Double, val deltaDp : Double,
+                                       val lag : Int) : ArrowsProvider {
     override val allArrows : MutableList<GameArrow>
         get() {
             val toRet = MutableList(0, {_ -> GameArrow(0, 0.0, 0.0) })
@@ -51,8 +52,8 @@ class ArrowsManager public constructor(audioInputStream: InputStream, val arrowR
     private fun worker() {
         val spawn = -300.0
         while (willGenerateMoreArrows() || anyArrowsAvaliable()) {
-            val elps = System.currentTimeMillis() - startTime - summPauseTime
-            if (elps > beats.peek().timeMs) {
+            val elps = System.currentTimeMillis() + lag - startTime - summPauseTime
+            while (elps > beats.peek().timeMs) {
                 //gen
                 beats.poll()
                 for (i in 0 until 4) {
