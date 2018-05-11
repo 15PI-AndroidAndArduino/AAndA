@@ -35,16 +35,16 @@ class MainActivity : Activity() {
 
         val dpHeight = getDpHeight()
 
-        player = MediaPlayer.create(this, R.raw.km)
-        player.setVolume(100f,100f)
-        player.start()
-
         ser = resources.openRawResource(R.raw.sfd)
         val stream = resources.openRawResource(R.raw.km)
 
         gsProvider = GameEngine(stream, 4.0,15.0)
         gsProvider.start()
         setContentView(GameView(this, gsProvider, 200))
+
+        player = MediaPlayer.create(this, R.raw.km)
+        player.setVolume(100f,100f)
+        player.start()
     }
 
     override fun onResume() {
